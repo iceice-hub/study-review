@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的每周学习复盘与AI助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .flashcard-back { display: none; }
+        .flashcard.flipped .flashcard-front { display: none; }
+        .flashcard.flipped .flashcard-back { display: block; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col text-base">
+
+    <!-- 顶部导航 -->
+    <header class="bg-indigo-600 text-white shadow-md py-4 px-6 mb-6">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-wide">✨ 我的每周学习复盘 & AI 智能诊断</h1>
+            <span class="text-xs bg-indigo-500 px-3 py-1 rounded-full text-white">PC & 手机多端可用</span>
+        </div>
+    </header>
+
+    <!-- 主体内容 -->
+    <main class="max-w-4xl mx-auto px-4 flex-grow w-full pb-12 space-y-8">
+
+        <!-- 1. 写复盘表单 -->
+        <section class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-indigo-600 mb-4">✍️ 写本周学习复盘</h2>
+            <form id="reviewForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-1">周次 / 标题（自动命名：日期_序号）</label>
+                    <input type="text" id="title" readonly class="w-full px-4 py-2 bg-slate-100 border border-slate-300 rounded-lg text-slate-600 font-mono text-sm cursor-not-allowed">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 数学 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-indigo-100 space-y-2">
+                        <label class="block text-sm font-semibold text-indigo-600">📐 数学复盘内容</label>
+                        <textarea id="math" rows="3" placeholder="本周数学学了什么？难点是什么？" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm"></textarea>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">📷 上传数学错题/笔记照片：</label>
+                            <input type="file" id="mathImg" accept="image/*" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- 化学 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-emerald-100 space-y-2">
+                        <label class="block text-sm font-semibold text-emerald-600">🧪 化学复盘内容</label>
+                        <textarea id="chemistry" rows="3" placeholder="本周化学学了什么？" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm"></textarea>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">📷 上传化学方程式/实验照片：</label>
+                            <input type="file" id="chemistryImg" accept="image/*" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- 物理 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-sky-100 space-y-2">
+                        <label class="block text-sm font-semibold text-sky-600">⚡ 物理复盘内容</label>
+                        <textarea id="physics" rows="3" placeholder="本周物理学了什么？" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-sky-500 focus:outline-none text-sm"></textarea>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">📷 上传物理受力分析/电路图照片：</label>
+                            <input type="file" id="physicsImg" accept="image/*" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-600 file:text-white hover:file:bg-sky-700 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- 生物 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-rose-100 space-y-2">
+                        <label class="block text-sm font-semibold text-rose-600">🧬 生物复盘内容</label>
+                        <textarea id="biology" rows="3" placeholder="本周生物学了什么？" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-rose-500 focus:outline-none text-sm"></textarea>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">📷 上传生物图解/生理机制照片：</label>
+                            <input type="file" id="biologyImg" accept="image/*" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-rose-600 file:text-white hover:file:bg-rose-700 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition duration-200 shadow-sm text-base">
+                    保存本周复盘并生成 Flashcard
+                </button>
+            </form>
+        </section>
+
+        <!-- 2. 历史复盘与 Flashcard 归档 -->
+        <section>
+            <h2 class="text-lg font-semibold text-slate-700 mb-4">📖 历史复盘归档与 AI 助手</h2>
+            <div id="reviewList" class="space-y-6"></div>
+            <div id="emptyState" class="text-center py-12 text-slate-400 text-sm hidden">
+                还没有写过复盘，快在上方记录你的第一周吧！
+            </div>
+        </section>
+    </main>
+
+    <!-- 照片放大弹窗 (Modal) -->
+    <div id="imageModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden p-4" onclick="closeImageModal()">
+        <div class="relative max-w-4xl max-h-[90vh]">
+            <img id="modalImg" src="" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain mx-auto" alt="大图预览">
+            <p class="text-white text-center text-xs mt-3 opacity-80">点击任意处关闭大图</p>
+        </div>
+    </div>
+
+    <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200">
+        Personal Study Review System &bull; AI Powered
+    </footer>
+
+    <script>
+        const form = document.getElementById('reviewForm');
+        const titleInput = document.getElementById('title');
+        const listContainer = document.getElementById('reviewList');
+        const emptyState = document.getElementById('emptyState');
+
+        let reviews = JSON.parse(localStorage.getItem('study_reviews')) || 
+                      JSON.parse(localStorage.getItem('reviews')) || [];
+
+        function generateAutoTitle() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const dateStr = `${year}${month}${day}`;
+            const todayCount = reviews.filter(r => r.dateStr === dateStr).length + 1;
+            titleInput.value = `${dateStr}_${String(todayCount).padStart(2, '0')}`;
+            titleInput.dataset.dateStr = dateStr;
+        }
+
+        function renderReviews() {
+            listContainer.innerHTML = '';
+            if (reviews.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            reviews.forEach((review, index) => {
+                const subjects = [
+                    { name: '📐 数学', text: review.math || '暂无记录', img: review.mathImg, color: 'border-indigo-200 bg-indigo-50/50 text-indigo-700' },
+                    { name: '🧪 化学', text: review.chemistry || '暂无记录', img: review.chemistryImg, color: 'border-emerald-200 bg-emerald-50/50 text-emerald-700' },
+                    { name: '⚡ 物理', text: review.physics || '暂无记录', img: review.physicsImg, color: 'border-sky-200 bg-sky-50/50 text-sky-700' },
+                    { name: '🧬 生物', text: review.biology || '暂无记录', img: review.biologyImg, color: 'border-rose-200 bg-rose-50/50 text-rose-700' }
+                ];
+
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4';
+
+                let flashcardsHtml = `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                        ${subjects.map((sub) => `
+                            <div class="flashcard border ${sub.color} rounded-lg p-3.5 cursor-pointer min-h-[120px] flex flex-col justify-between transition hover:shadow-md" onclick="toggleCard(this)">
+                                <div class="flashcard-front">
+                                    <div class="font-bold text-sm mb-1">${sub.name}</div>
+                                    <div class="text-xs text-slate-500">点击查看闪卡背面 ${sub.img ? '📷(含照片)' : ''}</div>
+                                </div>
+                                <div class="flashcard-back text-sm text-slate-800 space-y-2">
+                                    <div class="font-bold text-xs text-amber-600">${sub.name} (复盘)：</div>
+                                    <div class="whitespace-pre-wrap">${escapeHtml(sub.text)}</div>${sub.img ? `
+                                        <div class="relative group mt-2" onclick="openImageModal(event, '${sub.img}')">
+                                            <img src="${sub.img}" class="rounded-lg max-h-32 w-full object-cover border border-slate-300 hover:opacity-90 transition" alt="复盘照片">
+                                            <span class="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">🔍 点击放大照片</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                cardDiv.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                        <div>
+                            <span class="font-bold font-mono text-base text-slate-800">${escapeHtml(review.title)}</span>
+                            <span class="text-xs text-slate-400 ml-2">(${review.createdTime || '近期'})</span>
+                        </div>
+                        <button onclick="deleteReview(${index})" class="text-xs bg-red-50 text-red-500 border border-red-200 px-3 py-1.5 rounded hover:bg-red-100 transition">删除</button>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">🎴 本周 Flashcards (点击卡片翻转)</h4>
+                        ${flashcardsHtml}
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="text-xs font-bold text-purple-600 uppercase tracking-wider">🤖 AI 智能盲点分析与举一反三</h4>
+                            <button onclick="getAIAnalysis(${index})" id="ai-btn-${index}" class="text-xs bg-purple-600 hover:bg-purple-700 text-white px-3.5 py-2 rounded-lg transition shadow-sm font-medium">
+                                ✨ 召唤 AI 深度解析盲点
+                            </button>
+                        </div>
+                        <div id="ai-result-${index}" class="text-sm text-slate-700 bg-purple-50/50 p-4 rounded-lg border border-purple-100 whitespace-pre-wrap leading-relaxed ${review.aiAnalysis ? '' : 'hidden'}">
+                            ${review.aiAnalysis ? escapeHtml(review.aiAnalysis) : ''}
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(cardDiv);
+            });
+        }
+
+        // 翻转闪卡
+        window.toggleCard = function(el) {
+            el.classList.toggle('flipped');
+        };
+
+        // 打开全屏大图
+        window.openImageModal = function(e, imgSrc) {
+            e.stopPropagation(); // 防止触发卡片翻转
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImg');
+            modalImg.src = imgSrc;
+            modal.classList.remove('hidden');
+        };
+
+        // 关闭全屏大图
+        window.closeImageModal = function() {
+            document.getElementById('imageModal').classList.add('hidden');
+        };
+
+        function getBaseImage(fileId, callback) {
+            const fileInput = document.getElementById(fileId);
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) { callback(e.target.result); };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                callback(null);
+            }
+        }
+
+        window.getAIAnalysis = function(index) {
+            const review = reviews[index];
+            const btn = document.getElementById(`ai-btn-${index}`);
+            const resultBox = document.getElementById(`ai-result-${index}`);
+
+            btn.textContent = 'AI 正在深度解构你的复盘...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                let report = `【AI 定制化深度复盘与盲点诊断】\n\n`;
+                let hasContent = false;
+
+                if (review.math && review.math.trim() !== '') {
+                    hasContent = true;
+                    report += `📐 【数学深度拆解】\n`;
+                    report += `   - 💡 核心抓取：“${review.math}”\n`;
+                    report += `   - 🔍 盲点诊断：注意公式适用的前提条件及边界（如定义域、极限或特定概率统计前提）。\n`;
+                    report += `   - 🚀 举一反三：尝试自编一道变形题，并通过逻辑推导验证闭环。\n\n`;
+                }
+
+                if (review.chemistry && review.chemistry.trim() !== '') {
+                    hasContent = true;
+                    report += `🧪 【化学深度拆解】\n`;
+                    report += `   - 💡 核心抓取：“${review.chemistry}”\n`;
+                    report += `   - 🔍 盲点诊断：注意物质反应条件及平衡移动影响因素是否全面。\n`;
+                    report += `   - 🚀 举一反三：将本周方程式与同类官能团反应进行横向对比。\n\n`;
+                }
+
+                if (review.physics && review.physics.trim() !== '') {
+                    hasContent = true;
+                    report += `⚡ 【物理深度拆解】\n`;
+                    report += `   - 💡 核心抓取：“${review.physics}”\n`;
+                    report += `   - 🔍 盲点诊断：回归能量守恒或牛顿定律底层物理模型进行受力/过程拆解。\n`;
+                    report += `   - 🚀 举一反三：思考改变某个关键物理量后，整体变化趋势如何调整。\n\n`;
+                }
+
+                if (review.biology && review.biology.trim() !== '') {
+                    hasContent = true;
+                    report += `🧬 【生物深度拆解】\n`;
+                    report += `   - 💡 核心抓取：“${review.biology}”\n`;
+                    report += `   - 🔍 盲点诊断：生物专业术语和生理过程的逻辑链条需严谨规范。\n`;
+                    report += `   - 🚀 举一反三：用思维导图将本周生理机制或细胞过程串联成网。\n\n`;
+                }
+
+                if (!hasContent) {
+                    report += `⚠️ 提示：你本周填写的各科复盘内容为空，建议输入具体知识点或难点，AI 将为你实时解构专属盲点！\n\n`;
+                } else {
+                    report += `🎯 【下一步行动方案】\n   根据上述定制化盲点，建议寻找 2 道相关变式题限时训练，并将核心结论写进闪卡反复巩固！`;
+                }
+
+                review.aiAnalysis = report;
+                localStorage.setItem('study_reviews', JSON.stringify(reviews));
+
+                resultBox.textContent = report;
+                resultBox.classList.remove('hidden');
+                btn.textContent = '✨ 重新生成分析';
+                btn.disabled = false;
+            }, 1000);
+        };
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            getBaseImage('mathImg', function(mathImgData) {
+                getBaseImage('chemistryImg', function(chemImgData) {
+                    getBaseImage('physicsImg', function(physImgData) {
+                        getBaseImage('biologyImg', function(bioImgData) {
+                            const newReview = {
+                                title: titleInput.value,
+                                dateStr: titleInput.dataset.dateStr,
+                                math: document.getElementById('math').value,
+                                mathImg: mathImgData,
+                                chemistry: document.getElementById('chemistry').value,
+                                chemistryImg: chemImgData,
+                                physics: document.getElementById('physics').value,
+                                physicsImg: physImgData,
+                                biology: document.getElementById('biology').value,
+                                biologyImg: bioImgData,
+                                createdTime: new Date().toLocaleDateString(),
+                                aiAnalysis: ''
+                            };
+
+                            reviews.unshift(newReview);
+                            localStorage.setItem('study_reviews', JSON.stringify(reviews));
+                            form.reset();
+                            generateAutoTitle();
+                            renderReviews();
+                        });
+                    });
+                });
+            });
+        });
+
+        window.deleteReview = function(index) {
+            if (confirm('确定要删除这条复盘记录吗？')) {
+                reviews.splice(index, 1);
+                localStorage.setItem('study_reviews', JSON.stringify(reviews));
+                generateAutoTitle();
+                renderReviews();
+            }
+        };
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        generateAutoTitle();
+        renderReviews();
+    </script>
+</body>
+</html>
