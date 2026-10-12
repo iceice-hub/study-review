@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的每周学习复盘与AI助手 - 云同步版</title>
+    <title>我的每周学习复盘与AI助手 - 极速版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .flashcard-back { display: none; }
@@ -15,8 +15,8 @@
 
     <header class="bg-indigo-600 text-white shadow-md py-4 px-6 mb-6">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold tracking-wide">✨ 我的每周学习复盘 & AI 智能诊断（云同步版）</h1>
-            <span class="text-xs bg-indigo-500 px-3 py-1 rounded-full text-white">手机电脑实时同步</span>
+            <h1 class="text-xl font-bold tracking-wide">✨ 我的每周学习复盘 & AI 智能诊断</h1>
+            <span class="text-xs bg-indigo-500 px-3 py-1 rounded-full text-white">极速本地存储版</span>
         </div>
     </header>
 
@@ -73,17 +73,17 @@
                 </div>
 
                 <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition duration-200 shadow-sm text-base">
-                    保存本周复盘并同步至云端
+                    保存本周复盘并生成 Flashcard
                 </button>
             </form>
         </section>
 
         <!-- 2. 历史复盘与 Flashcard 归档 -->
         <section>
-            <h2 class="text-lg font-semibold text-slate-700 mb-4">📖 云端历史复盘归档与 AI 助手</h2>
+            <h2 class="text-lg font-semibold text-slate-700 mb-4">📖 历史复盘归档与 AI 助手</h2>
             <div id="reviewList" class="space-y-6"></div>
             <div id="emptyState" class="text-center py-12 text-slate-400 text-sm hidden">
-                云端还没有复盘记录，快在上方记录你的第一周吧！
+                还没有复盘记录，快在上方记录你的第一周吧！
             </div>
         </section>
     </main>
@@ -97,53 +97,20 @@
     </div>
 
     <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200">
-        Personal Study Review System &bull; Cloud Powered by Supabase
+        Personal Study Review System &bull; AI Powered
     </footer>
 
     <script>
-        const SUPABASE_URL = 'https://yerkoihlfnjjlcbidngnd.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_A0VXwdAWG1_N5C8TOxYIPA_4UeCnbpS';
-
         const form = document.getElementById('reviewForm');
         const titleInput = document.getElementById('title');
         const listContainer = document.getElementById('reviewList');
         const emptyState = document.getElementById('emptyState');
 
-        let reviews = [];
+        let reviews = JSON.parse(localStorage.getItem('study_reviews')) || [];
 
-        // 使用标准 REST API 获取数据
-        async function fetchReviews() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/reviews?select=*&order=id.desc`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                if (!response.ok) throw new Error('网络请求失败');
-                const data = await response.json();
-                
-                reviews = (data || []).map(item => ({
-                    id: item.id,
-                    title: item.title,
-                    dateStr: item.date_str,
-                    math: item.math,
-                    mathImg: item.math_img,
-                    chemistry: item.chemistry,
-                    chemistryImg: item.chemistry_img,
-                    physics: item.physics,
-                    physicsImg: item.physics_img,
-                    biology: item.biology,
-                    biologyImg: item.biology_img,
-                    createdTime: item.created_time,
-                    aiAnalysis: item.ai_analysis
-                }));
-
-                generateAutoTitle();
-                renderReviews();
-            } catch (err) {
-                console.error('获取云端数据失败:', err);
-            }
+        function initApp() {
+            generateAutoTitle();
+            renderReviews();
         }
 
         function generateAutoTitle() {
@@ -255,7 +222,7 @@
             }
         }
 
-        window.getAIAnalysis = async function(id) {
+        window.getAIAnalysis = function(id) {
             const review = reviews.find(r => r.id == id);
             const btn = document.getElementById(`ai-btn-${id}`);
             const resultBox = document.getElementById(`ai-result-${id}`);
@@ -263,13 +230,13 @@
             btn.textContent = 'AI 正在深度解构你的复盘...';
             btn.disabled = true;
 
-            setTimeout(async () => {
+            setTimeout(() => {
                 let report = `【AI 定制化深度复盘与盲点诊断】\n\n`;
                 let hasContent = false;
 
                 if (review.math && review.math.trim() !== '') {
                     hasContent = true;
-                    report += `📐 【数学深度拆解】\n   - 💡 核心抓取：“${review.math}”\n   - 🔍 盲点诊断：注意公式适用的前提条件及边界。\n   - 🚀 举一反三：尝试自编一道变形题，通过逻辑推导验证闭环。\n\n`;
+                    report += `📐 【数学深度拆解】\n   - 💡 核心抓取：“${review.math}”\n   - 🔍 盲点诊断：注意公式适用的前提条件及边界（如定义域、极限）。\n   - 🚀 举一反三：尝试自编一道变形题，通过逻辑推导验证闭环。\n\n`;
                 }
                 if (review.chemistry && review.chemistry.trim() !== '') {
                     hasContent = true;
@@ -277,7 +244,7 @@
                 }
                 if (review.physics && review.physics.trim() !== '') {
                     hasContent = true;
-                    report += `⚡ 【物理深度拆解】\n   - 💡 核心抓取：“${review.physics}”\n   - 🔍 盲点诊断：回归能量守恒或牛顿定律底层物理模型拆解。\n   - 🚀 举一反三：思考改变某个关键物理量后整体变化趋势。\n\n`;
+                    report += `⚡ 【物理深度拆解】\n   - 💡 核心抓取：“${review.physics}”\n   - 🔍 盲点诊断：回归能量守恒或牛顿定律底层物理模型进行受力/过程拆解。\n   - 🚀 举一反三：思考改变某个关键物理量后整体变化趋势。\n\n`;
                 }
                 if (review.biology && review.biology.trim() !== '') {
                     hasContent = true;
@@ -290,30 +257,19 @@
                     report += `🎯 【下一步行动方案】\n   根据定制化盲点，建议寻找 2 道相关变式题限时训练并写进闪卡！`;
                 }
 
-                await fetch(`${SUPABASE_URL}/rest/v1/reviews?id=eq.${id}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify({ ai_analysis: report })
-                });
-
                 review.aiAnalysis = report;
+                localStorage.setItem('study_reviews', JSON.stringify(reviews));
                 resultBox.textContent = report;
                 resultBox.classList.remove('hidden');
                 btn.textContent = '✨ 重新生成分析';
                 btn.disabled = false;
-            }, 1000);
+            }, 800);
         };
 
-        // 使用标准 REST API 提交数据
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.textContent = '正在同步至云端数据库...';
+            submitBtn.textContent = '正在生成并保存...';
             submitBtn.disabled = true;
 
             getBaseImage('mathImg', function(mathImgData) {
@@ -321,63 +277,38 @@
                     getBaseImage('physicsImg', function(physImgData) {
                         getBaseImage('biologyImg', function(bioImgData) {
                             const newRecord = {
+                                id: Date.now(),
                                 title: titleInput.value,
-                                date_str: titleInput.dataset.dateStr,
+                                dateStr: titleInput.dataset.dateStr,
                                 math: document.getElementById('math').value,
-                                math_img: mathImgData,
+                                mathImg: mathImgData,
                                 chemistry: document.getElementById('chemistry').value,
-                                chemistry_img: chemImgData,
+                                chemistryImg: chemImgData,
                                 physics: document.getElementById('physics').value,
-                                physics_img: physImgData,
+                                physicsImg: physImgData,
                                 biology: document.getElementById('biology').value,
-                                biology_img: bioImgData,
-                                created_time: new Date().toLocaleDateString(),
-                                ai_analysis: ''
+                                biologyImg: bioImgData,
+                                createdTime: new Date().toLocaleDateString(),
+                                aiAnalysis: ''
                             };
 
-                            fetch(`${SUPABASE_URL}/rest/v1/reviews`, {
-                                method: 'POST',
-                                headers: {
-                                    'apikey': SUPABASE_KEY,
-                                    'Authorization': `Bearer ${SUPABASE_KEY}`,
-                                    'Content-Type': 'application/json',
-                                    'Prefer': 'return=minimal'
-                                },
-                                body: JSON.stringify(newRecord)
-                            })
-                            .then(response => {
-                                if (!response.ok) throw new Error('保存到云端失败');
-                                form.reset();
-                                fetchReviews();
-                                submitBtn.textContent = '保存本周复盘并同步至云端';
-                                submitBtn.disabled = false;
-                            })
-                            .catch(err => {
-                                alert('保存到云端失败: ' + err.message);
-                                submitBtn.textContent = '保存本周复盘并同步至云端';
-                                submitBtn.disabled = false;
-                            });
+                            reviews.unshift(newRecord);
+                            localStorage.setItem('study_reviews', JSON.stringify(reviews));
+                            form.reset();
+                            initApp();
+                            submitBtn.textContent = '保存本周复盘并生成 Flashcard';
+                            submitBtn.disabled = false;
                         });
                     });
                 });
             });
         });
 
-        // 使用标准 REST API 删除数据
-        window.deleteReview = async function(id) {
-            if (confirm('确定要删除这条云端复盘记录吗？')) {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/reviews?id=eq.${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                if (!response.ok) {
-                    alert('删除失败');
-                    return;
-                }
-                fetchReviews();
+        window.deleteReview = function(id) {
+            if (confirm('确定要删除这条复盘记录吗？')) {
+                reviews = reviews.filter(r => r.id != id);
+                localStorage.setItem('study_reviews', JSON.stringify(reviews));
+                renderReviews();
             }
         };
 
@@ -386,7 +317,7 @@
             return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        fetchReviews();
+        initApp();
     </script>
 </body>
 </html>
