@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的每周学习复盘与AI助手 - 云同步版</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入最新版 Supabase 客户端库 -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
         .flashcard-back { display: none; }
         .flashcard.flipped .flashcard-front { display: none; }
@@ -35,6 +33,363 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- 数学 -->
                     <div class="bg-slate-50 p-4 rounded-xl border border-indigo-100 space-y-2">
+                        <label class="block text-sm font-semibold text-indigo-600">📐 数学复盘内容</label>
+                        <textarea id="math" rows="3" placeholder="本周数学学了什么？难点是什么？" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm"></textarea>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">📷 上传数学错题/笔记照片：</label>
+                            <input type="file" id="mathImg" accept="image/*" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- 化学 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-emerald-100 space-y-2">
+                        <label class="block text-sm font-semibold text-emerald-600">🧪 化学复盘内容</label>
+                        <textarea id="chemistry" rows="3" placeholder="本周化学学了什么？" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm"></textarea>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">📷 上传化学方程式/实验照片：</label>
+                            <input type="file" id="chemistryImg" accept="image/*" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-700 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- 物理 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-sky-100 space-y-2">
+                        <label class="block text-sm font-semibold text-sky-600">⚡ 物理复盘内容</label>
+                        <textarea id="physics" rows="3" placeholder="本周物理学了什么？" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-sky-500 focus:outline-none text-sm"></textarea>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">📷 上传物理受力分析/电路图照片：</label>
+                            <input type="file" id="physicsImg" accept="image/*" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-600 file:text-white hover:file:bg-sky-700 cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- 生物 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-rose-100 space-y-2">
+                        <label class="block text-sm font-semibold text-rose-600">🧬 生物复盘内容</label>
+                        <textarea id="biology" rows="3" placeholder="本周生物学了什么？" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-rose-500 focus:outline-none text-sm"></textarea>
+                        <div>
+                            <label class="block text-xs text-slate-500 mb-1">📷 上传生物图解/生理机制照片：</label>
+                            <input type="file" id="biologyImg" accept="image/*" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-rose-600 file:text-white hover:file:bg-rose-700 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition duration-200 shadow-sm text-base">
+                    保存本周复盘并同步至云端
+                </button>
+            </form>
+        </section>
+
+        <!-- 2. 历史复盘与 Flashcard 归档 -->
+        <section>
+            <h2 class="text-lg font-semibold text-slate-700 mb-4">📖 云端历史复盘归档与 AI 助手</h2>
+            <div id="reviewList" class="space-y-6"></div>
+            <div id="emptyState" class="text-center py-12 text-slate-400 text-sm hidden">
+                云端还没有复盘记录，快在上方记录你的第一周吧！
+            </div>
+        </section>
+    </main>
+
+    <!-- 照片放大弹窗 -->
+    <div id="imageModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden p-4" onclick="closeImageModal()">
+        <div class="relative max-w-4xl max-h-[90vh]">
+            <img id="modalImg" src="" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain mx-auto" alt="大图预览">
+            <p class="text-white text-center text-xs mt-3 opacity-80">点击任意处关闭大图</p>
+        </div>
+    </div>
+
+    <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200">
+        Personal Study Review System &bull; Cloud Powered by Supabase
+    </footer>
+
+    <script>
+        const SUPABASE_URL = 'https://yerkoihlfnjjlcbidngnd.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_A0VXwdAWG1_N5C8TOxYIPA_4UeCnbpS';
+
+        const form = document.getElementById('reviewForm');
+        const titleInput = document.getElementById('title');
+        const listContainer = document.getElementById('reviewList');
+        const emptyState = document.getElementById('emptyState');
+
+        let reviews = [];
+
+        // 使用标准 REST API 获取数据
+        async function fetchReviews() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reviews?select=*&order=id.desc`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                if (!response.ok) throw new Error('网络请求失败');
+                const data = await response.json();
+                
+                reviews = (data || []).map(item => ({
+                    id: item.id,
+                    title: item.title,
+                    dateStr: item.date_str,
+                    math: item.math,
+                    mathImg: item.math_img,
+                    chemistry: item.chemistry,
+                    chemistryImg: item.chemistry_img,
+                    physics: item.physics,
+                    physicsImg: item.physics_img,
+                    biology: item.biology,
+                    biologyImg: item.biology_img,
+                    createdTime: item.created_time,
+                    aiAnalysis: item.ai_analysis
+                }));
+
+                generateAutoTitle();
+                renderReviews();
+            } catch (err) {
+                console.error('获取云端数据失败:', err);
+            }
+        }
+
+        function generateAutoTitle() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const dateStr = `${year}${month}${day}`;
+            const todayCount = reviews.filter(r => r.dateStr === dateStr).length + 1;
+            titleInput.value = `${dateStr}_${String(todayCount).padStart(2, '0')}`;
+            titleInput.dataset.dateStr = dateStr;
+        }
+
+        function renderReviews() {
+            listContainer.innerHTML = '';
+            if (reviews.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            reviews.forEach((review) => {
+                const subjects = [
+                    { name: '📐 数学', text: review.math || '暂无记录', img: review.mathImg, color: 'border-indigo-200 bg-indigo-50/50 text-indigo-700' },
+                    { name: '🧪 化学', text: review.chemistry || '暂无记录', img: review.chemistryImg, color: 'border-emerald-200 bg-emerald-50/50 text-emerald-700' },
+                    { name: '⚡ 物理', text: review.physics || '暂无记录', img: review.physicsImg, color: 'border-sky-200 bg-sky-50/50 text-sky-700' },
+                    { name: '🧬 生物', text: review.biology || '暂无记录', img: review.biologyImg, color: 'border-rose-200 bg-rose-50/50 text-rose-700' }
+                ];
+
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4';
+
+                let flashcardsHtml = `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                        ${subjects.map((sub) => `
+                            <div class="flashcard border ${sub.color} rounded-lg p-3.5 cursor-pointer min-h-[120px] flex flex-col justify-between transition hover:shadow-md" onclick="toggleCard(this)">
+                                <div class="flashcard-front">
+                                    <div class="font-bold text-sm mb-1">${sub.name}</div>
+                                    <div class="text-xs text-slate-500">点击查看闪卡背面 ${sub.img ? '📷(含照片)' : ''}</div>
+                                </div>
+                                <div class="flashcard-back text-sm text-slate-800 space-y-2">
+                                    <div class="font-bold text-xs text-amber-600">${sub.name} (复盘)：</div>
+                                    <div class="whitespace-pre-wrap">${escapeHtml(sub.text)}</div>${sub.img ? `
+                                        <div class="relative group mt-2" onclick="openImageModal(event, '${sub.img}')">
+                                            <img src="${sub.img}" class="rounded-lg max-h-32 w-full object-cover border border-slate-300 hover:opacity-90 transition" alt="复盘照片">
+                                            <span class="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">🔍 点击放大照片</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                cardDiv.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                        <div>
+                            <span class="font-bold font-mono text-base text-slate-800">${escapeHtml(review.title)}</span>
+                            <span class="text-xs text-slate-400 ml-2">(${review.createdTime || '近期'})</span>
+                        </div>
+                        <button onclick="deleteReview('${review.id}')" class="text-xs bg-red-50 text-red-500 border border-red-200 px-3 py-1.5 rounded hover:bg-red-100 transition">删除</button>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">🎴 本周 Flashcards (点击卡片翻转)</h4>
+                        ${flashcardsHtml}
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="text-xs font-bold text-purple-600 uppercase tracking-wider">🤖 AI 智能盲点分析与举一反三</h4>
+                            <button onclick="getAIAnalysis('${review.id}')" id="ai-btn-${review.id}" class="text-xs bg-purple-600 hover:bg-purple-700 text-white px-3.5 py-2 rounded-lg transition shadow-sm font-medium">
+                                ✨ 召唤 AI 深度解析盲点
+                            </button>
+                        </div>
+                        <div id="ai-result-${review.id}" class="text-sm text-slate-700 bg-purple-50/50 p-4 rounded-lg border border-purple-100 whitespace-pre-wrap leading-relaxed ${review.aiAnalysis ? '' : 'hidden'}">
+                            ${review.aiAnalysis ? escapeHtml(review.aiAnalysis) : ''}
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(cardDiv);
+            });
+        }
+
+        window.toggleCard = function(el) {
+            el.classList.toggle('flipped');
+        };
+
+        window.openImageModal = function(e, imgSrc) {
+            e.stopPropagation();
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImg');
+            modalImg.src = imgSrc;
+            modal.classList.remove('hidden');
+        };
+
+        window.closeImageModal = function() {
+            document.getElementById('imageModal').classList.add('hidden');
+        };
+
+        function getBaseImage(fileId, callback) {
+            const fileInput = document.getElementById(fileId);
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) { callback(e.target.result); };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                callback(null);
+            }
+        }
+
+        window.getAIAnalysis = async function(id) {
+            const review = reviews.find(r => r.id == id);
+            const btn = document.getElementById(`ai-btn-${id}`);
+            const resultBox = document.getElementById(`ai-result-${id}`);
+
+            btn.textContent = 'AI 正在深度解构你的复盘...';
+            btn.disabled = true;
+
+            setTimeout(async () => {
+                let report = `【AI 定制化深度复盘与盲点诊断】\n\n`;
+                let hasContent = false;
+
+                if (review.math && review.math.trim() !== '') {
+                    hasContent = true;
+                    report += `📐 【数学深度拆解】\n   - 💡 核心抓取：“${review.math}”\n   - 🔍 盲点诊断：注意公式适用的前提条件及边界。\n   - 🚀 举一反三：尝试自编一道变形题，通过逻辑推导验证闭环。\n\n`;
+                }
+                if (review.chemistry && review.chemistry.trim() !== '') {
+                    hasContent = true;
+                    report += `🧪 【化学深度拆解】\n   - 💡 核心抓取：“${review.chemistry}”\n   - 🔍 盲点诊断：注意物质反应条件及平衡移动影响因素。\n   - 🚀 举一反三：将本周方程式与同类官能团反应进行横向对比。\n\n`;
+                }
+                if (review.physics && review.physics.trim() !== '') {
+                    hasContent = true;
+                    report += `⚡ 【物理深度拆解】\n   - 💡 核心抓取：“${review.physics}”\n   - 🔍 盲点诊断：回归能量守恒或牛顿定律底层物理模型拆解。\n   - 🚀 举一反三：思考改变某个关键物理量后整体变化趋势。\n\n`;
+                }
+                if (review.biology && review.biology.trim() !== '') {
+                    hasContent = true;
+                    report += `🧬 【生物深度拆解】\n   - 💡 核心抓取：“${review.biology}”\n   - 🔍 盲点诊断：生物专业术语和生理过程的逻辑链条需规范。\n   - 🚀 举一反三：用思维导图将本周生理机制或细胞过程串联。\n\n`;
+                }
+
+                if (!hasContent) {
+                    report += `⚠️ 提示：你本周填写的各科复盘内容为空，建议输入具体知识点！\n\n`;
+                } else {
+                    report += `🎯 【下一步行动方案】\n   根据定制化盲点，建议寻找 2 道相关变式题限时训练并写进闪卡！`;
+                }
+
+                await fetch(`${SUPABASE_URL}/rest/v1/reviews?id=eq.${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ ai_analysis: report })
+                });
+
+                review.aiAnalysis = report;
+                resultBox.textContent = report;
+                resultBox.classList.remove('hidden');
+                btn.textContent = '✨ 重新生成分析';
+                btn.disabled = false;
+            }, 1000);
+        };
+
+        // 使用标准 REST API 提交数据
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.textContent = '正在同步至云端数据库...';
+            submitBtn.disabled = true;
+
+            getBaseImage('mathImg', function(mathImgData) {
+                getBaseImage('chemistryImg', function(chemImgData) {
+                    getBaseImage('physicsImg', function(physImgData) {
+                        getBaseImage('biologyImg', function(bioImgData) {
+                            const newRecord = {
+                                title: titleInput.value,
+                                date_str: titleInput.dataset.dateStr,
+                                math: document.getElementById('math').value,
+                                math_img: mathImgData,
+                                chemistry: document.getElementById('chemistry').value,
+                                chemistry_img: chemImgData,
+                                physics: document.getElementById('physics').value,
+                                physics_img: physImgData,
+                                biology: document.getElementById('biology').value,
+                                biology_img: bioImgData,
+                                created_time: new Date().toLocaleDateString(),
+                                ai_analysis: ''
+                            };
+
+                            fetch(`${SUPABASE_URL}/rest/v1/reviews`, {
+                                method: 'POST',
+                                headers: {
+                                    'apikey': SUPABASE_KEY,
+                                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                                    'Content-Type': 'application/json',
+                                    'Prefer': 'return=minimal'
+                                },
+                                body: JSON.stringify(newRecord)
+                            })
+                            .then(response => {
+                                if (!response.ok) throw new Error('保存到云端失败');
+                                form.reset();
+                                fetchReviews();
+                                submitBtn.textContent = '保存本周复盘并同步至云端';
+                                submitBtn.disabled = false;
+                            })
+                            .catch(err => {
+                                alert('保存到云端失败: ' + err.message);
+                                submitBtn.textContent = '保存本周复盘并同步至云端';
+                                submitBtn.disabled = false;
+                            });
+                        });
+                    });
+                });
+            });
+        });
+
+        // 使用标准 REST API 删除数据
+        window.deleteReview = async function(id) {
+            if (confirm('确定要删除这条云端复盘记录吗？')) {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reviews?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                if (!response.ok) {
+                    alert('删除失败');
+                    return;
+                }
+                fetchReviews();
+            }
+        };
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        fetchReviews();
+    </script>
+</body>
+</html>                    <div class="bg-slate-50 p-4 rounded-xl border border-indigo-100 space-y-2">
                         <label class="block text-sm font-semibold text-indigo-600">📐 数学复盘内容</label>
                         <textarea id="math" rows="3" placeholder="本周数学学了什么？难点是什么？" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm"></textarea>
                         <div>
